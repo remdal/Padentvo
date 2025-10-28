@@ -58,47 +58,27 @@
 
 - (void)_startLongRunningEvent
 {
-    CHHapticEventParameter* hapticEventParam =
-        [[CHHapticEventParameter alloc] initWithParameterID:CHHapticEventParameterIDHapticIntensity
-                                                      value:1.0];
-    
-    CHHapticEvent* continuousEvent =
-        [[CHHapticEvent alloc] initWithEventType:CHHapticEventTypeHapticContinuous
-                                      parameters:@[hapticEventParam]
-                                    relativeTime:0
-                                        duration:GCHapticDurationInfinite];
-    
+    CHHapticEventParameter* hapticEventParam = [[CHHapticEventParameter alloc] initWithParameterID:CHHapticEventParameterIDHapticIntensity value:1.0];
+    CHHapticEvent* continuousEvent = [[CHHapticEvent alloc] initWithEventType:CHHapticEventTypeHapticContinuous parameters:@[hapticEventParam] relativeTime:0 duration:GCHapticDurationInfinite];
     NSError* __autoreleasing error = nil;
-    
-    CHHapticPattern* pattern =
-        [[CHHapticPattern alloc] initWithEvents:@[continuousEvent]
-                                     parameters:@[]
-                                          error:&error];
-    
+    CHHapticPattern* pattern = [[CHHapticPattern alloc] initWithEvents:@[continuousEvent] parameters:@[] error:&error];
     if (!pattern)
     {
         NSLog(@"Error creating haptic pattern: %@", error.localizedDescription);
         assert(pattern);
     }
-    
-    // If the player has a game controller with a haptic engine:
-    
     assert (_engine);
-    
     _longRunningPatternPlayer = [_engine createPlayerWithPattern:pattern error:&error];
     if (!_longRunningPatternPlayer)
     {
         NSLog(@"Error creating long-running pattern player: %@", error.localizedDescription);
         assert(_longRunningPatternPlayer);
     }
-    
     if (![_longRunningPatternPlayer startAtTime:CHHapticTimeImmediate error:&error])
     {
         NSLog(@"Error starting long-running pattern player: %@", error.localizedDescription);
         assert(false);
     }
-    
-    // Mute intensity until overwritten:
     [self setIntensity:0.0f];
 }
 
@@ -111,17 +91,9 @@
     
     if (!_isEngineStopped)
     {
-        CHHapticDynamicParameter* hapticParameter =
-        [[CHHapticDynamicParameter alloc] initWithParameterID:CHHapticDynamicParameterIDHapticIntensityControl
-                                                        value:intensity
-                                                 relativeTime:0];
-        
+        CHHapticDynamicParameter* hapticParameter = [[CHHapticDynamicParameter alloc] initWithParameterID:CHHapticDynamicParameterIDHapticIntensityControl value:intensity relativeTime:0];
         NSError* __autoreleasing error = nil;
-        
-        // Multiply pattern's initial intensity by the new parameter:
-        if (![_longRunningPatternPlayer sendParameters:@[hapticParameter]
-                                                atTime:CHHapticTimeImmediate
-                                                 error:&error])
+        if (![_longRunningPatternPlayer sendParameters:@[hapticParameter] atTime:CHHapticTimeImmediate error:&error])
         {
             NSLog(@"Error updating motor intensity: %@", error.localizedDescription);
         }

@@ -154,6 +154,7 @@ $(APP_NAME): $(NAME) #$(ICON)
 	@echo "\t$(CYAN)[Creating application bundle]$(RESET)"
 	@mkdir -p $(APP_MACOS) $(APP_RESOURCES)
 	@cp $(NAME) $(APP_MACOS)/
+	@mkdir -p $(APP_CONTENTS)
 	@cp $(PLIST) $(APP_CONTENTS)/Info.plist
 	@if [ -f $(ICON) ]; then cp $(ICON) $(APP_RESOURCES)/AppIcon.icns; fi
 	@for metallib in $(METAL_METALLIB); do \
