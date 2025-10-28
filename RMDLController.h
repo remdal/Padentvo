@@ -1,7 +1,6 @@
 #ifndef RMDLCONTROLLER_H
 #define RMDLCONTROLLER_H
 
-// For CFIndex, CFTypeRef
 #include <CoreFoundation/CFBase.h>
 #import <Foundation/Foundation.h>
 #import <CoreMotion/CoreMotion.h>

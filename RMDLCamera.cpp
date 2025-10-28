@@ -16,10 +16,10 @@ static simd::float4x4 sInvMatrixLookat( simd::float3 inEye, simd::float3 inTo, s
     simd::float3 x = simd::normalize(simd::cross(inUp, z));
     simd::float3 y = simd::cross(z, x);
     simd::float3 t = (simd::float3) { -simd::dot(x, inEye), -simd::dot(y, inEye), -simd::dot(z, inEye) };
-    return (simd::float4x4(simd::float4 { x.x, y.x, z.x, 0 },
-                           simd::float4 { x.y, y.y, z.y, 0 },
-                           simd::float4 { x.z, y.z, z.z, 0 },
-                           simd::float4 { t.x, t.y, t.z, 1 }));
+    return ( simd::float4x4( simd::float4 { x.x, y.x, z.x, 0 },
+                             simd::float4 { x.y, y.y, z.y, 0 },
+                             simd::float4 { x.z, y.z, z.z, 0 },
+                             simd::float4 { t.x, t.y, t.z, 1 }) );
 }
 
 static simd::float4 sPlaneNormalize( const simd::float4& inPlane )
@@ -99,7 +99,7 @@ void RMDLCamera::updateUniforms()
     }
     _uniforms.viewProjectionMatrix = _uniforms.projectionMatrix * _uniforms.viewMatrix;
     _uniforms.invProjectionMatrix = simd_inverse(_uniforms.projectionMatrix);
-    _uniforms.invOrientationProjectionMatrix = simd_inverse(_uniforms.projectionMatrix * sInvMatrixLookat(simd::float3{0,0,0}, _direction, _up));
+    _uniforms.invOrientationProjectionMatrix = simd_inverse( _uniforms.projectionMatrix * sInvMatrixLookat( simd::float3{0, 0, 0}, _direction, _up ) );
     _uniforms.invViewProjectionMatrix = simd_inverse(_uniforms.viewProjectionMatrix);
     _uniforms.invViewMatrix = simd_inverse(_uniforms.viewMatrix);
     simd::float4x4 transp_vpm = simd::transpose(_uniforms.viewProjectionMatrix);
@@ -269,7 +269,7 @@ simd::float4x4 RMDLCamera::InvViewMatrix()
     return (uniforms().invViewMatrix);
 }
     
-void RMDLCamera::rotateOnAxis(simd::float3 inAxis, float inRadians)
+void RMDLCamera::rotateOnAxis( simd::float3 inAxis, float inRadians )
 {
     simd::float3 axis = simd::normalize(inAxis);
     float ct = cosf(inRadians);

@@ -48,7 +48,7 @@ GameController::GameController()
         }
     }];
     
-    __block GameController* pOwner = this; // capture as writable by the block
+    __block GameController* pOwner = this;
     
     [NSNotificationCenter.defaultCenter addObserverForName:GCControllerDidConnectNotification
                                                     object: nil
@@ -56,10 +56,6 @@ GameController::GameController()
                                                 usingBlock:^(NSNotification * _Nonnull notification) {
         
         GCController* controller = (GCController *)(notification.object);
-        
-        // Check if the controller supports haptic feedback and if so prepare to
-        // play haptics on it:
-        
         if (controller.haptics)
         {
             CHHapticEngine* hapticEngine =
@@ -79,18 +75,6 @@ GameController::GameController()
             }
         }
     }];
-    
-    // Accelerometer
-    
-#if TARGET_OS_IOS
-    CMMotionManager* cm = [[CMMotionManager alloc] init];
-    if (cm.isAccelerometerAvailable)
-    {
-        cm.accelerometerUpdateInterval = 1/60.0f;
-        [cm startAccelerometerUpdates];
-        _motionManager = CFBridgingRetain(cm);
-    }
-#endif
 }
 
 GameController::~GameController()
@@ -104,20 +88,12 @@ GameController::~GameController()
 
 simd::float3 GameController::accelerometerData() const
 {
-    if (this->_motionManager)
-    {
-#if TARGET_OS_IOS
-        CMMotionManager* cm = (__bridge CMMotionManager *)this->_motionManager;
-        CMAcceleration accel = cm.accelerometerData.acceleration;
-        return simd::float3 { (float)accel.x, (float)accel.y, (float)accel.z };
-#endif
-    }
-    return simd::float3{ 0, 0, 0 };
+    return ( simd::float3{ 0, 0, 0 } );
 }
 
 bool GameController::isLeftArrowDown() const
 {
-    return [GCKeyboard.coalescedKeyboard.keyboardInput buttonForKeyCode:GCKeyCodeLeftArrow].pressed;
+    return ( [GCKeyboard.coalescedKeyboard.keyboardInput buttonForKeyCode:GCKeyCodeLeftArrow].pressed );
 }
 
 bool GameController::isRightArrowDown() const
@@ -182,13 +158,4 @@ void GameController::setHapticIntensity(float intensity) const
 
 void GameController::renderOverlay( MTL::RenderCommandEncoder* pEnc )
 {
-    // Here you can customize how your touch (virtual) game controller looks
-    // by directly issuing Metal commands and render it onscreen.
-
-    // To accomplish this, in IOSViewController.m, customize the Virtual Game
-    // Controller to hide its buttons, and render your custom UI from here.
-
-    // Follow the guidance in the HIG to develop a great touch controls
-    // experience for your players by surfacing actions relevant to your
-    // game's context, and drawing semantically-meaningful glyphs.
 }

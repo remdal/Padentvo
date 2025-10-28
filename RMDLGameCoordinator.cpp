@@ -133,11 +133,9 @@ MTL::CommandBuffer* GameCoordinator::beginDrawableCommands()
     // accessing the the dynamic buffer written to this frame. When the GPU no longer accesses the
     // buffer, the renderer can safely overwrite the buffer's contents with data for a future frame.
 
-    pCommandBuffer->addCompletedHandler(MTL::HandlerFunction([this]( MTL::CommandBuffer* ){
-        dispatch_semaphore_signal( m_inFlightSemaphore );
-    }));
-
-    return pCommandBuffer;
+    pCommandBuffer->addCompletedHandler( MTL::HandlerFunction( [this]( MTL::CommandBuffer* ){
+        dispatch_semaphore_signal( m_inFlightSemaphore ); } ) );
+    return (pCommandBuffer);
 }
 
 void GameCoordinator::setupCamera()
@@ -159,57 +157,11 @@ void GameCoordinator::buildCubeBuffers()
 {
 }
 
-void GameCoordinator::buildRenderPipelines(const std::string& shaderSearchPath)
+void GameCoordinator::buildRenderPipelines( const std::string& shaderSearchPath )
 {
-    NS::Error* pError = nullptr;
-    std::string metallibPath = shaderSearchPath + "/Shaders.metallib";
-    NS::String* nsPath = NS::String::string(metallibPath.c_str(), NS::StringEncoding::UTF8StringEncoding);
-    MTL::Library* pLibrary = _pDevice->newLibrary(nsPath, &pError);
-    if ( !pLibrary )
-    {
-        __builtin_printf( "%s", pError->localizedDescription()->utf8String() );
-        assert( false );
-    }
-    MTL::Function* pVertexFn = pLibrary->newFunction(NS::String::string("vertex_main", NS::StringEncoding::UTF8StringEncoding));
-    MTL::Function* pFragmentFn = pLibrary->newFunction(NS::String::string("fragment_main", NS::StringEncoding::UTF8StringEncoding));
-    MTL::RenderPipelineDescriptor* pDesc = MTL::RenderPipelineDescriptor::alloc()->init();
-    pDesc->setVertexFunction(pVertexFn);
-    pDesc->setFragmentFunction(pFragmentFn);
-    pDesc->colorAttachments()->object(0)->setPixelFormat( MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB );
-    pDesc->setDepthAttachmentPixelFormat( MTL::PixelFormat::PixelFormatDepth16Unorm );
-
-    MTL::VertexDescriptor* pVertexDesc = MTL::VertexDescriptor::alloc()->init();
-
-    // Position (attribute 0)
-    pVertexDesc->attributes()->object(0)->setFormat(MTL::VertexFormatFloat3);
-    pVertexDesc->attributes()->object(0)->setOffset(0);
-    pVertexDesc->attributes()->object(0)->setBufferIndex(0);
-
-    // Couleur (attribute 1)
-    pVertexDesc->attributes()->object(1)->setFormat(MTL::VertexFormatFloat3);
-    pVertexDesc->attributes()->object(1)->setOffset(12); // 3 floats * 4 bytes = 12
-    pVertexDesc->attributes()->object(1)->setBufferIndex(0);
-
-    // Layout du buffer
-    pVertexDesc->layouts()->object(0)->setStride(24); // 6 floats * 4 bytes = 24
-    pVertexDesc->layouts()->object(0)->setStepRate(1);
-    pVertexDesc->layouts()->object(0)->setStepFunction(MTL::VertexStepFunctionPerVertex);
-
-    pDesc->setVertexDescriptor(pVertexDesc);
-
-    MTL::DepthStencilDescriptor* pDepthDesc = MTL::DepthStencilDescriptor::alloc()->init();
-    pDepthDesc->setDepthCompareFunction(MTL::CompareFunctionLess);
-    pDepthDesc->setDepthWriteEnabled(true);
-    
-    pDepthDesc->release();
-    pVertexDesc->release();
-    pDesc->release();
-    pVertexFn->release();
-    pFragmentFn->release();
-    pLibrary->release();
 }
 
-void GameCoordinator::buildComputePipelines(const std::string& shaderSearchPath)
+void GameCoordinator::buildComputePipelines( const std::string& shaderSearchPath )
 {
     // Build any compute pipelines
 }
@@ -219,7 +171,7 @@ void GameCoordinator::buildRenderTextures(NS::UInteger nativeWidth, NS::UInteger
 {
 }
 
-void GameCoordinator::moveCamera(simd::float3 translation)
+void GameCoordinator::moveCamera( simd::float3 translation )
 {
     simd::float3 newPosition = _camera.position() + translation;
     _camera.setPosition(newPosition);
@@ -238,39 +190,4 @@ void GameCoordinator::setCameraAspectRatio(float aspectRatio)
 
 void GameCoordinator::draw( CA::MetalDrawable* pDrawable, double targetTimestamp )
 {
-    assert(pDrawable);
-    NS::AutoreleasePool* pPool = NS::AutoreleasePool::alloc()->init();
-    
-    //dispatch_semaphore_wait(m_inFlightSemaphore, DISPATCH_TIME_FOREVER);
-    
-    MTL::CommandBuffer* pCmd = _pCommandQueue->commandBuffer();
-    
-    //updateWorldState(false);
-
-    _rotationAngle += 0.008f;
-    if (_rotationAngle > 2 * M_PI)
-    {
-        _rotationAngle -= 2 * M_PI;
-    }
-    Uniforms* pUniforms = (Uniforms *)_pUniformBuffer->contents();
-    simd::float4x4 modelMatrix =
-    {
-        simd::float4{ cosf(_rotationAngle), 0.0f, sinf(_rotationAngle), 0.0f },
-        simd::float4{ 0.0f, 1.0f, 0.0f, 0.0f },
-        simd::float4{ -sinf(_rotationAngle), 0.0f, cosf(_rotationAngle), 0.0f },
-        simd::float4{ 0.0f, 0.0f, 0.0f, 1.0f }
-    };
-    RMDLCameraUniforms cameraUniforms = _camera.uniforms();
-    pUniforms->modelMatrix = modelMatrix;
-    pUniforms->modelViewProjectionMatrix = cameraUniforms.viewProjectionMatrix * modelMatrix;
-    
-    MTL::RenderPassDescriptor* pRenderPass = MTL::RenderPassDescriptor::renderPassDescriptor();
-    pRenderPass->colorAttachments()->object(0)->setTexture(pDrawable->texture());
-    pRenderPass->colorAttachments()->object(0)->setLoadAction(MTL::LoadActionClear);
-    pRenderPass->colorAttachments()->object(0)->setClearColor(MTL::ClearColor::Make(0.1, 0.1, 0.1, 1.0));
-    pRenderPass->colorAttachments()->object(0)->setStoreAction(MTL::StoreActionStore);
-    
-    pCmd->presentDrawable(pDrawable);
-    pCmd->commit();
-    pPool->release();
 }

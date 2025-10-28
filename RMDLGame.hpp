@@ -24,8 +24,6 @@
 
 #include "RMDLConfig.h"
 
-// Texture table indices:
-
 constexpr uint64_t kEnemyTextureIndex        = 0;
 constexpr uint64_t kPlayerTextureIndex       = 1;
 constexpr uint64_t kPlayerBulletTextureIndex = 2;
@@ -146,16 +144,16 @@ public:
     RMDLGame();
     ~RMDLGame();
     
-    void             initialize(const GameConfig& config, MTL::Device* pDevice, MTL::CommandQueue* pCommandQueue);
+    void             initialize( const GameConfig& config, MTL::Device* pDevice, MTL::CommandQueue* pCommandQueue );
     void             restartGame(const GameConfig& config, float startingScore);
     const GameState* update(double targetTimestamp, uint8_t frameID);
-    void             draw(MTL::RenderCommandEncoder* pRenderCmd, uint8_t frameID);
-    void             drawUI(MTL::RenderCommandEncoder* pRenderCmd, uint8_t frameID, const FontAtlas&, const IndexedMesh&);
+    void             draw( MTL::RenderCommandEncoder* pRenderCmd, uint8_t frameID );
+    void             drawUI( MTL::RenderCommandEncoder* pRenderCmd, uint8_t frameID, const FontAtlas&, const IndexedMesh& );
 
     
 private:
-    void createBuffers(const GameConfig& config, MTL::Device* pDevice);
-    void initializeResidencySet(const GameConfig& config, MTL::Device* pDevice, MTL::CommandQueue* pCommandQueue);
+    void createBuffers( const GameConfig& config, MTL::Device* pDevice );
+    void initializeResidencySet( const GameConfig& config, MTL::Device* pDevice, MTL::CommandQueue* pCommandQueue );
     void initializeGameState(const GameConfig& config);
     void updateCollisions();
 

@@ -9,8 +9,8 @@
 
 #include "RMDLUtils.hpp"
 
-MTL::Texture* newTextureFromFile(const std::string& texturePath, MTL::Device* pDevice);
-MTL::Texture* newTextureArrayFromFiles(const std::vector<std::string>& texturePaths, MTL::Device* pDevice, MTL::CommandBuffer* pCommandBuffer);
+MTL::Texture* newTextureFromFile( const std::string& texturePath, MTL::Device* pDevice );
+MTL::Texture* newTextureArrayFromFiles( const std::vector<std::string>& texturePaths, MTL::Device* pDevice, MTL::CommandBuffer* pCommandBuffer );
 
 static char g_chars[] = {
     '!', '\"', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',',  '-', '.', '/', '0',

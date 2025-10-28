@@ -13,7 +13,7 @@ MTL::Texture* newTextureFromFile( const std::string& texturePath, MTL::Device* p
     
     NSError* __autoreleasing error = nil;
     id<MTLTexture> texture = [loader newTextureWithContentsOfURL:url
-                                                         options:@{MTKTextureLoaderOptionLoadAsArray : @(YES), /* Shader converter pipelines expect texture arrays */
+                                                         options:@{MTKTextureLoaderOptionLoadAsArray : @(YES),
                                                                    MTKTextureLoaderOptionTextureStorageMode : @(MTLStorageModePrivate),
                                                                    MTKTextureLoaderOptionTextureUsage : @(MTLTextureUsageShaderRead),
                                                                    MTKTextureLoaderOptionGenerateMipmaps : @(YES)}
