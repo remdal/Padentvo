@@ -1,12 +1,12 @@
 #include "RMDLUI.hpp"
 
-UI::UI()
+RMDLUI::RMDLUI()
 {
     ft_memset(&_highScoreMesh, 0x0, sizeof(IndexedMesh));
     ft_memset(&_currentScoreMesh, 0x0, sizeof(IndexedMesh));
 }
 
-UI::~UI()
+RMDLUI::~RMDLUI()
 {
     mesh_utils::releaseMesh(&_highScoreMesh);
     mesh_utils::releaseMesh(&_currentScoreMesh);

@@ -21,8 +21,8 @@ public:
     RMDLCamera();
     ~RMDLCamera();
 
-    RMDLCamera&     initPerspectiveWithPosition(simd::float3 position, simd::float3 direction, simd::float3 up, float viewAngle, float aspectRatio, float nearPlane, float farPlane);
-    RMDLCamera&     initParallelWithPosition(simd::float3 position, simd::float3 direction, simd::float3 up, float width, float height, float nearPlane, float farPlane);
+    RMDLCamera&     initPerspectiveWithPosition( simd::float3 position, simd::float3 direction, simd::float3 up, float viewAngle, float aspectRatio, float nearPlane, float farPlane );
+    RMDLCamera&     initParallelWithPosition( simd::float3 position, simd::float3 direction, simd::float3 up, float width, float height, float nearPlane, float farPlane );
     RMDLCameraUniforms  uniforms();
     void            updateUniforms();
     bool            isPerspective() const;
@@ -55,7 +55,7 @@ public:
     simd::float4x4  InvViewProjectionMatrix();
     simd::float4x4  InvProjectionMatrix();
     simd::float4x4  InvViewMatrix();
-    void            rotateOnAxis(simd::float3 inAxis, float inRadians);
+    void            rotateOnAxis( simd::float3 inAxis, float inRadians );
 private:
     float           _nearPlane;
     float           _farPlane;
@@ -65,8 +65,8 @@ private:
     simd::float3    _up;
     simd::float3    _position;
     simd::float3    _direction;
-    void            orthogonalizeFromNewUp(simd::float3 newUp);
-    void            orthogonalizeFromNewForward(simd::float3 newForward);
+    void            orthogonalizeFromNewUp( simd::float3 newUp );
+    void            orthogonalizeFromNewForward( simd::float3 newForward );
     bool            _uniformsDirty;
     RMDLCameraUniforms  _uniforms;
 };

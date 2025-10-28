@@ -4,14 +4,14 @@
 #include "RMDLFontLoader.h"
 #include "RMDLMesh.hpp"
 #include "RMDLMathUtils.hpp"
-#include <../includes/NonCopyable.h>
+#include "NonCopyable.h"
 #include "RMDLUtils.hpp"
 #include "RMDLMeshUtils.hpp"
+#include "RMDLConfig.h"
 
 #include <memory>
 
 constexpr uint64_t kFontAtlasTextureIndex = 0;
-static constexpr size_t kMaxFramesInFlight = 3;
 
 struct UIConfig
 {
@@ -37,11 +37,11 @@ struct UIRenderData
     NS::SharedPtr<MTL::ResidencySet>                               pResidencySet;
 };
 
-class UI : public NonCopyable
+class RMDLUI : public NonCopyable
 {
 public:
-    UI();
-    ~UI();
+    RMDLUI();
+    ~RMDLUI();
     void initialize( const UIConfig& config, MTL::Device* pDevice, MTL::CommandQueue* pCommandQueue );
     void showHighScore( const char* label, int highscore, MTL::Device* pDevice );
     void showCurrentScore( const char* label, int score, MTL::Device* pDevice );

@@ -10,7 +10,6 @@
 
 #include "RMDLGameCoordinatorController.h"
 #include "RMDLGameCoordinator.hpp"
-#include "RMDLOtherObject.hpp"
 
 #import <QuartzCore/QuartzCore.h>
 
@@ -28,7 +27,6 @@ static void* renderWorker( void* _Nullable obj )
 @implementation RMDLGameCoordinatorController
 {
     std::unique_ptr< GameCoordinator > _pGameCoordinator;
-    std::unique_ptr< OtherObject >     _pOtherObject;
     CAMetalLayer*                      _metalLayer;
     CAMetalDisplayLink*                _metalDisplayLink;
 }
@@ -40,13 +38,7 @@ static void* renderWorker( void* _Nullable obj )
     {
         _metalLayer = metalLayer;
         NSString* shaderPath = NSBundle.mainBundle.resourcePath;
-        _pGameCoordinator = std::make_unique< GameCoordinator >((__bridge MTL::Device *)_metalLayer.device,
-                                                                (MTL::PixelFormat)_metalLayer.pixelFormat,
-                                                                _metalLayer.drawableSize.width,
-                                                                _metalLayer.drawableSize.height,
-                                                                gameUICanvasSize,
-                                                                shaderPath.UTF8String);
-        _pOtherObject = std::make_unique< OtherObject >((__bridge MTL::Device *)_metalLayer.device);
+        _pGameCoordinator = std::make_unique< GameCoordinator >((__bridge MTL::Device *)_metalLayer.device, (MTL::PixelFormat)_metalLayer.pixelFormat, _metalLayer.drawableSize.width, _metalLayer.drawableSize.height, gameUICanvasSize, shaderPath.UTF8String);
         _metalDisplayLink = [[CAMetalDisplayLink alloc] initWithMetalLayer:_metalLayer];
         _metalDisplayLink.delegate = self;
         _metalDisplayLink.preferredFrameRateRange = CAFrameRateRangeMake(30, 60, 120);
@@ -72,7 +64,6 @@ static void* renderWorker( void* _Nullable obj )
 - (void)dealloc
 {
     self->_metalDisplayLink = nil;
-    _pOtherObject.reset();
     _pGameCoordinator.reset();
 }
 
@@ -86,31 +77,7 @@ static void* renderWorker( void* _Nullable obj )
 {
     @autoreleasepool {
         id<CAMetalDrawable> drawable = update.drawable;
-        if (!drawable)
-        {
-            NSLog(@"No drawable available");
-            return ;
-        }
-        if (_pGameCoordinator)
-        {   @try {
-                CA::MetalDrawable* metalDrawable = (__bridge CA::MetalDrawable*)drawable;
-                _pGameCoordinator->draw(metalDrawable, CACurrentMediaTime());
-            } @catch (NSException *exception) {
-                NSLog(@"Error in draw: %@", exception);
-            }
-        } else {
-            NSLog(@"Game coordinator is null");
-        }
-        if (_pOtherObject)
-        {   @try {
-                CA::MetalDrawable* metalDrawable = (__bridge CA::MetalDrawable*)drawable;
-                _pOtherObject->draw(metalDrawable, CACurrentMediaTime());
-            } @catch (NSException *exception) {
-                NSLog(@"Error in draw: %@", exception);
-            }
-        } else {
-            NSLog(@"Other Object is null");
-        }
+        _pGameCoordinator->draw((__bridge CA::MetalDrawable *)drawable, CACurrentMediaTime());
     }
 }
 
@@ -129,25 +96,33 @@ static void* renderWorker( void* _Nullable obj )
     _pGameCoordinator->setEDRBias(edrBias);
 }
 
+- (void)saveHighScore
+{
+    NSString* saveFilePath = [NSTemporaryDirectory() stringByAppendingString:@"/hiscore.txt"];
+    NSString* hiScoreTxt = [NSString stringWithFormat:@"%d", _pGameCoordinator->highScore()];
+    NSError* __autoreleasing fileError = nil;
+    bool success = [hiScoreTxt writeToURL:[NSURL fileURLWithPath:saveFilePath] atomically:NO encoding:NSUTF8StringEncoding error:&fileError];
+    if (!success)
+    {
+        NSLog(@"Error writing temporary hi-score file: %@", fileError.localizedDescription);
+        assert(false);
+    }
+    NSLog(@"Saved high score of: %@", hiScoreTxt);
+}
+
 - (void)moveCameraX:(float)x Y:(float)y Z:(float)z
 {
-    if (_pGameCoordinator) {
-        _pGameCoordinator->moveCamera(simd::float3{x, y, z});
-    }
+    _pGameCoordinator->moveCamera( simd::float3{x, y, z} );
 }
 
 - (void)rotateCameraYaw:(float)yaw Pitch:(float)pitch
 {
-    if (_pGameCoordinator) {
-        _pGameCoordinator->rotateCamera(yaw, pitch);
-    }
+    _pGameCoordinator->rotateCamera(yaw, pitch);
 }
 
 - (void)updateCameraAspectRatio:(float)aspectRatio
 {
-    if (_pGameCoordinator) {
-        _pGameCoordinator->setCameraAspectRatio(aspectRatio);
-    }
+    _pGameCoordinator->setCameraAspectRatio(aspectRatio);
 }
 
 @end

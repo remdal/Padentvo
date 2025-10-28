@@ -11,7 +11,7 @@
 
 #include <simd/simd.h>
 
-#include <../includes/NonCopyable.h>
+#include "NonCopyable.h"
 #import "Haptics.h"
 
 namespace MTL
@@ -39,7 +39,7 @@ public:
 
     void setHapticIntensity(float intensity) const;
     
-    void  renderOverlay(MTL::RenderCommandEncoder* pEnc);
+    void  renderOverlay( MTL::RenderCommandEncoder* pEnc );
     
     simd::float3 accelerometerData() const;
 private:

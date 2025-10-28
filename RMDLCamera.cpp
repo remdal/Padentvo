@@ -10,7 +10,7 @@
 
 #include "RMDLCamera.hpp"
 
-static simd::float4x4 sInvMatrixLookat(simd::float3 inEye, simd::float3 inTo, simd::float3 inUp)
+static simd::float4x4 sInvMatrixLookat( simd::float3 inEye, simd::float3 inTo, simd::float3 inUp )
 {
     simd::float3 z = simd::normalize(inTo - inEye);
     simd::float3 x = simd::normalize(simd::cross(inUp, z));
@@ -22,7 +22,7 @@ static simd::float4x4 sInvMatrixLookat(simd::float3 inEye, simd::float3 inTo, si
                            simd::float4 { t.x, t.y, t.z, 1 }));
 }
 
-static simd::float4 sPlaneNormalize(const simd::float4& inPlane)
+static simd::float4 sPlaneNormalize( const simd::float4& inPlane )
 {
     return (inPlane / simd::length(inPlane.xyz));
 }
@@ -35,7 +35,7 @@ RMDLCamera::~RMDLCamera()
 {
 }
 
-RMDLCamera& RMDLCamera::initPerspectiveWithPosition(simd::float3 position, simd::float3 direction, simd::float3 up, float viewAngle, float aspectRatio, float nearPlane, float farPlane)
+RMDLCamera& RMDLCamera::initPerspectiveWithPosition( simd::float3 position, simd::float3 direction, simd::float3 up, float viewAngle, float aspectRatio, float nearPlane, float farPlane )
 {
     _up = up;
     orthogonalizeFromNewForward(direction);
@@ -49,7 +49,7 @@ RMDLCamera& RMDLCamera::initPerspectiveWithPosition(simd::float3 position, simd:
     return (*this);
 }
     
-RMDLCamera& RMDLCamera::initParallelWithPosition(simd::float3 position, simd::float3 direction, simd::float3 up, float width, float height, float nearPlane, float farPlane)
+RMDLCamera& RMDLCamera::initParallelWithPosition( simd::float3 position, simd::float3 direction, simd::float3 up, float width, float height, float nearPlane, float farPlane )
 {
     _up = up;
     orthogonalizeFromNewForward(direction);
@@ -278,23 +278,22 @@ void RMDLCamera::rotateOnAxis(simd::float3 inAxis, float inRadians)
     float x = axis.x;
     float y = axis.y;
     float z = axis.z;
-    
-    simd::float3x3 mat((simd::float3){ ct + x * x * ci, y * x * ci + z * st, z * x * ci - y * st } ,
-                       (simd::float3){ x * y * ci - z * st, ct + y * y * ci, z * y * ci + x * st } ,
-                       (simd::float3){ x * z * ci + y * st, y * z * ci - x * st, ct + z * z * ci } );
+    simd::float3x3 mat( (simd::float3){ ct + x * x * ci, y * x * ci + z * st, z * x * ci - y * st } ,
+                        (simd::float3){ x * y * ci - z * st, ct + y * y * ci, z * y * ci + x * st } ,
+                        (simd::float3){ x * z * ci + y * st, y * z * ci - x * st, ct + z * z * ci } );
     _direction = mat * _direction;
     _up = mat * _up;
     _uniformsDirty = true;
 }
 
-void RMDLCamera::orthogonalizeFromNewUp(simd::float3 newUp)
+void RMDLCamera::orthogonalizeFromNewUp( simd::float3 newUp )
 {
     _up = simd::normalize(newUp);
-    simd::float3 right = simd::normalize(simd::cross(_direction, _up));
+    simd::float3 right = simd::normalize( simd::cross(_direction, _up) );
     _direction = simd::cross(_up, right);
 }
     
-void RMDLCamera::orthogonalizeFromNewForward(simd::float3 newForward)
+void RMDLCamera::orthogonalizeFromNewForward( simd::float3 newForward )
 {
     _direction = simd::normalize(newForward);
     simd::float3 right = simd::normalize(simd::cross(_direction, _up));

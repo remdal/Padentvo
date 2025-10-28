@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include <../includes/NonCopyable.h>
+#include "NonCopyable.h"
 
 class PhaseAudio : public NonCopyable
 {

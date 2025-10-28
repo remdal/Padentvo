@@ -3,7 +3,7 @@ CC			=	clang
 NAME		=	Padentvo
 SRCS		=	*.cpp *.m *.mm *.c
 INCLUDES	=	*.h *.hpp
-SHADERS		=	Shaders
+SHADERS		=	*.metal
 APP_NAME	=	$(NAME).app
 APP_CONTENTS	=	$(APP_NAME)/Contents
 APP_MACOS	=	$(APP_CONTENTS)/MacOS
@@ -21,8 +21,8 @@ METAL_FLAGS	=	#-std=macos-metal2.3
 CFLAGS		=	-I./includes -Wall -Wextra -Werror
 OBJS_DIR	=	Product
 DEPS_DIR	=	$(OBJS_DIR)
-PLIST		=	application/macOS/macOSInfo.plist
-ICON		=	Application/macOS/AppIcon.icns
+PLIST		=	macOSInfo.plist
+ICON		=	AppIcon.icns
 FLAGS		=	-std=c++20 -ObjC++ -g -I./includes -I./Shaders -I./Frameworks/metal-cpp -I./Frameworks/metal-cpp-extensions -ferror-limit=100 -fobjc-weak -Warc-bridge-casts-disallowed-in-nonarc -Wobjc-missing-super-calls#-Wall -Wextra -Werror -fobjc-arc
 #LINKERFLAGS	=	-Xlinker -sectcreate -Xlinker __TEXT -Xlinker __info_plist -Xlinker $(PLIST)
 
