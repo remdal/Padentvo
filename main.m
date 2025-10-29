@@ -34,6 +34,8 @@ int main( int argc, const char * argv[] )
     NSApplication* application = [NSApplication sharedApplication];
     application.mainMenu = [[NSMenu alloc] init];
     NSString* bundleName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
+    if (!bundleName)
+        bundleName = @"ok";
     NSMenu* appMenu = [[NSMenu alloc] initWithTitle:@""];
     NSMenuItem* appMenuItem = [[NSMenuItem alloc] initWithTitle:@"" action:nil keyEquivalent:@""];
     [appMenu addItemWithTitle:[@"About " stringByAppendingString:bundleName] action:@selector(orderFrontStandardAboutPanel:) keyEquivalent:@""];

@@ -95,6 +95,7 @@ GameCoordinator::GameCoordinator(MTL::Device* pDevice,
     std::cout << "number of Threads = std::thread::hardware_concurrency : " << numThreads << std::endl;
     _pCommandQueue = _pDevice->newCommandQueue();
     setupCamera();
+    std::cout << sizeof(uint64_t) << std::endl; // 8
     
     const NS::UInteger nativeWidth = (NS::UInteger)(width / 1.2);
     const NS::UInteger nativeHeight = (NS::UInteger)(height / 1.2);
