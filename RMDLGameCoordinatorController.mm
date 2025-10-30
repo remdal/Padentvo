@@ -41,7 +41,7 @@ static void* renderWorker( void* _Nullable obj )
         _pGameCoordinator = std::make_unique< GameCoordinator >((__bridge MTL::Device *)_metalLayer.device, (MTL::PixelFormat)_metalLayer.pixelFormat, _metalLayer.drawableSize.width, _metalLayer.drawableSize.height, gameUICanvasSize, shaderPath.UTF8String);
         _metalDisplayLink = [[CAMetalDisplayLink alloc] initWithMetalLayer:_metalLayer];
         _metalDisplayLink.delegate = self;
-        _metalDisplayLink.preferredFrameRateRange = CAFrameRateRangeMake(30, 60, 120);
+        _metalDisplayLink.preferredFrameRateRange = CAFrameRateRangeMake(30, 120, 60);
         int res = 0;
         pthread_attr_t attr;
         res = pthread_attr_init( &attr );

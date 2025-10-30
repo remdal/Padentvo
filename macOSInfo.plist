@@ -33,12 +33,12 @@
 		<string>metal</string>
 	</array>
 	<key>NSHumanReadableCopyright</key>
-	<string>© 2025 Laboitederemdal. All rights reserved.</string>
+	<string>Copyright © 2025 Laboitederemdal. All rights reserved.</string>
 	<key>CFBundleIconFile</key>
 	<string>AppIcon.icns</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>CFBundlePackageType</key>
-	<string>RMDL</string>
+	<string>APPL</string>
 </dict>
 </plist>

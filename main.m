@@ -11,6 +11,8 @@
 #import <Cocoa/Cocoa.h>
 #import "RMDLGameApplication.h"
 
+#include "iostream"
+
 static void makeSliderSubmenu(NSMenu* parentMenu, NSString* title, SEL action, double minValue, double maxValue, double defaultValue, NSInteger tickmarks)
 {
     NSMenu* submenu = [[NSMenu alloc] initWithTitle:title];
@@ -36,6 +38,7 @@ int main( int argc, const char * argv[] )
     NSString* bundleName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
     if (!bundleName)
         bundleName = @"ok";
+    std::cout << bundleName << std::endl;
     NSMenu* appMenu = [[NSMenu alloc] initWithTitle:@""];
     NSMenuItem* appMenuItem = [[NSMenuItem alloc] initWithTitle:@"" action:nil keyEquivalent:@""];
     [appMenu addItemWithTitle:[@"About " stringByAppendingString:bundleName] action:@selector(orderFrontStandardAboutPanel:) keyEquivalent:@""];

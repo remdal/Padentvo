@@ -106,27 +106,6 @@ typedef enum TextureIndex
     NumMeshTextures = TextureIndexNormal + 1
 }   TextureIndex;
 
-struct FrameData
-{
-    simd::float4x4 projection_matrix;
-    simd::float4x4 projection_matrix_inverse;
-    simd::float4x4 view_matrix;
-    unsigned int framebuffer_width;
-    unsigned int framebuffer_height;
-    simd::float4x4 temple_modelview_matrix;
-    simd::float4x4 temple_model_matrix;
-    simd::float3x3 temple_normal_matrix;
-    float shininess_factor;
-    float fairy_size;
-    float fairy_specular_intensity;
-    simd::float4x4 sky_modelview_matrix;
-    simd::float4x4 shadow_mvp_matrix;
-    simd::float4x4 shadow_mvp_xform_matrix;
-    simd::float4 sun_eye_direction;
-    simd::float4 sun_color;
-    float sun_specular_intensity;
-};
-
 typedef enum RenderTargetIndex
 {
     RenderTargetLighting  = 0,

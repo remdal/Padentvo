@@ -93,9 +93,15 @@ GameCoordinator::GameCoordinator(MTL::Device* pDevice,
     printf("GameCoordinator constructor called\n");
     unsigned int numThreads = std::thread::hardware_concurrency();
     std::cout << "number of Threads = std::thread::hardware_concurrency : " << numThreads << std::endl;
+    ft_memset(&_screenMesh, 0x0, sizeof(IndexedMesh)); // fill with 0
+    ft_memset(&_quadMesh, 0x0, sizeof(IndexedMesh));
     _pCommandQueue = _pDevice->newCommandQueue();
     setupCamera();
     std::cout << sizeof(uint64_t) << std::endl; // 8
+    
+//    buildRenderPipelines(assetSearchPath);
+//    buildComputePipelines(assetSearchPath);
+//    buildSamplers();
     
     const NS::UInteger nativeWidth = (NS::UInteger)(width / 1.2);
     const NS::UInteger nativeHeight = (NS::UInteger)(height / 1.2);
@@ -104,39 +110,15 @@ GameCoordinator::GameCoordinator(MTL::Device* pDevice,
 
 GameCoordinator::~GameCoordinator()
 {
+    _pSampler->release();
+
+    _pPresentPipeline->release();
+    _pInstancedSpritePipeline->release();
+    
+    mesh_utils::releaseMesh(&_quadMesh);
+    mesh_utils::releaseMesh(&_screenMesh);
     _pCommandQueue->release();
-    if (m_inFlightSemaphore)
-    {
-        dispatch_release(m_inFlightSemaphore);
-    }
     _pDevice->release();
-}
-
-// Get a drawable from the view (or hand back an offscreen drawable for buffer examination mode)
-MTL::Texture* GameCoordinator::currentDrawableTexture( MTL::Drawable* pCurrentDrawable )
-{
-    if(pCurrentDrawable)
-    {
-        auto pMtlDrawable = static_cast< CA::MetalDrawable* >(pCurrentDrawable);
-        return pMtlDrawable->texture();
-    }
-
-    return nullptr;
-}
-
-MTL::CommandBuffer* GameCoordinator::beginDrawableCommands()
-{
-    MTL::CommandBuffer* pCommandBuffer = m_pCommandQueue->commandBuffer();
-
-    // Create a completed handler functor for Metal to execute when the GPU has fully finished
-    // processing the commands encoded for this frame. This implenentation of the completed
-    // handler signals the `m_inFlightSemaphore`, which indicates that the GPU is no longer
-    // accessing the the dynamic buffer written to this frame. When the GPU no longer accesses the
-    // buffer, the renderer can safely overwrite the buffer's contents with data for a future frame.
-
-    pCommandBuffer->addCompletedHandler( MTL::HandlerFunction( [this]( MTL::CommandBuffer* ){
-        dispatch_semaphore_signal( m_inFlightSemaphore ); } ) );
-    return (pCommandBuffer);
 }
 
 void GameCoordinator::setupCamera()
@@ -191,4 +173,27 @@ void GameCoordinator::setCameraAspectRatio(float aspectRatio)
 
 void GameCoordinator::draw( CA::MetalDrawable* pDrawable, double targetTimestamp )
 {
+    assert(pDrawable);
+    NS::AutoreleasePool *pPool = NS::AutoreleasePool::alloc()->init();
+    ++_pacingTimeStampIndex;
+    _frame = (_frame + 1) % kMaxFramesInFlight;
+    if (_pacingTimeStampIndex > kMaxFramesInFlight)
+    {
+        uint64_t const timeStampToWait = _pacingTimeStampIndex - kMaxFramesInFlight;
+        _pPacingEvent->waitUntilSignaledValue(timeStampToWait, DISPATCH_TIME_FOREVER);
+    }
+    MTL::CommandBuffer* pCmd = _pCommandQueue->commandBuffer();
+    _bufferAllocator[_frame]->reset();
+    {
+        MTL::RenderPassDescriptor* pRenderPass = MTL::RenderPassDescriptor::renderPassDescriptor();
+        auto pColorAttachment0 = pRenderPass->colorAttachments()->object(0);
+        pColorAttachment0->setTexture(_pBackbuffer.get());
+        pColorAttachment0->setLoadAction(MTL::LoadActionClear);
+        pColorAttachment0->setStoreAction(MTL::StoreActionStore);
+        pColorAttachment0->setClearColor(MTL::ClearColor(0.15, 0.15, 0.15, 1.0));
+        MTL::RenderCommandEncoder* pRenderEnc = pCmd->renderCommandEncoder(pRenderPass);
+        //const GameState* pGameState = _game.update(targetTimestamp, _frame);
+        //_game.draw(pRenderEnc, _frame);
+        pRenderEnc->endEncoding();
+    }
 }

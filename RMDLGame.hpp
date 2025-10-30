@@ -20,9 +20,9 @@
 #include "RMDLController.h"
 #include "RMDLMeshUtils.hpp"
 #include "RMDLPhaseAudio.hpp"
-//#include "BumpAllocator.hpp"
+#include "RMDLBumpAllocator.hpp"
 
-#include "RMDLConfig.h"
+#include "RMDLConfig_Shared.h"
 
 constexpr uint64_t kEnemyTextureIndex        = 0;
 constexpr uint64_t kPlayerTextureIndex       = 1;

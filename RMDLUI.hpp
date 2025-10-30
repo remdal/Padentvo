@@ -1,5 +1,5 @@
 #ifndef RMDLUI_HPP
-#define RMDLUI_HPP
+# define RMDLUI_HPP
 
 #include "RMDLFontLoader.h"
 #include "RMDLMesh.hpp"
@@ -7,7 +7,8 @@
 #include "NonCopyable.h"
 #include "RMDLUtils.hpp"
 #include "RMDLMeshUtils.hpp"
-#include "RMDLConfig.h"
+#include "RMDLConfig_Shared.h"
+#include "RMDLBumpAllocator.hpp"
 
 #include <memory>
 
@@ -26,7 +27,7 @@ struct UIConfig
 
 struct UIRenderData
 {
-    //std::array<std::unique_ptr<BumpAllocator>, kMaxFramesInFlight> bufferAllocator;
+    std::array<std::unique_ptr<BumpAllocator>, kMaxFramesInFlight> bufferAllocator;
     std::array<NS::SharedPtr<MTL::Heap>, kMaxFramesInFlight>       resourceHeaps;
     std::array<NS::SharedPtr<MTL::Buffer>, kMaxFramesInFlight>     frameDataBuf;
     std::array<NS::SharedPtr<MTL::Buffer>, kMaxFramesInFlight>     highScorePositionBuf;

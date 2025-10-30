@@ -1,7 +1,6 @@
 #ifndef RMDLPHASEAUDIO_HPP
 #define RMDLPHASEAUDIO_HPP
 
-// For CFTypeRef
 #include <CoreFoundation/CFBase.h>
 #include <string>
 #include <vector>
