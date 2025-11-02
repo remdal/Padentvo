@@ -80,7 +80,7 @@ struct RenderData
     IndexedMesh                      spriteMesh;
     IndexedMesh                      backgroundMesh;
     
-    //std::array<std::unique_ptr<BumpAllocator>, kMaxFramesInFlight> bufferAllocator;
+    std::array<std::unique_ptr<BumpAllocator>, kMaxFramesInFlight> bufferAllocator;
     std::array<NS::SharedPtr<MTL::Heap>, kMaxFramesInFlight>       resourceHeaps;
     
     NS::SharedPtr<MTL::ResidencySet> residencySet;
@@ -100,44 +100,25 @@ enum class GameStatus
     PlayerLost
 };
 
-/**
- * Hold the current state of a game. This structure holds the
- * ground truth for the game. The game's update() loop adjusts and
- * copies position data vectors into Metal buffers to ensure
- * the draw() function draws them in the correct position on screen.
- * Initialize in initializeGameState() for each new game or level.
- */
 struct GameState
 {
     uint32_t                    enemiesAlive;
-    std::vector<simd::float4>   enemyPositions;
-    
     uint8_t                     playerBulletsAlive;
     std::vector<simd::float4>   playerBulletPositions;
     float                       playerFireCooldownRemaining;
-    
-    uint8_t                     explosionsAlive;
     std::vector<simd::float4>   explosionPositions;
     std::vector<float>          explosionCooldownsRemaining;
-    
     simd::float4                playerPosition;
-    EnemyDirection              currentEnemyDirection;
-    EnemyDirection              nextEnemyDirection;
+    // EnemyDirection              currentEnemyDirection;
     simd::float4                backgroundPosition;
 
     GameStatus                  gameStatus;
-    
     float                       rumbleCountdownRemaining;
     float                       enemyMovedownRemaining;
-    
     void                        reset();
     int                         playerScore;
 };
 
-/**
- * A game instance that the GameCooordinator starts, updates,
- * and restarts as the player clears levels (or loses).
- */
 class RMDLGame : public NonCopyable
 {
 public:
@@ -152,9 +133,9 @@ public:
 
     
 private:
+    void initializeGameState(const GameConfig& config);
     void createBuffers( const GameConfig& config, MTL::Device* pDevice );
     void initializeResidencySet( const GameConfig& config, MTL::Device* pDevice, MTL::CommandQueue* pCommandQueue );
-    void initializeGameState(const GameConfig& config);
     void updateCollisions();
 
     GameController _gameController;

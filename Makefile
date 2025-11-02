@@ -12,7 +12,7 @@ CPP_FILES	=	$(shell find $(SRCS) -name '*.cpp')
 C_FILES		=	$(shell find $(SRCS) -name '*.c')
 MM_FILES	=	$(shell find $(SRCS) -name '*.mm')
 M_FILES		=	$(shell find $(SRCS) -name '*.m')
-HEADERS_H	=	$(shell find $(INCLUDES) -name '*.h')
+HEADERS_H	=	$(shell find $(INCLUDES) -name '*.h') /usr/local/include
 HEADERS_HPP	=	$(shell find $(INCLUDES) -name '*.hpp')
 METAL_FILES	=	$(shell find $(SHADERS) -name '*.metal')
 METAL_AIR	=	$(patsubst $(SHADERS)/%.metal,$(OBJS_DIR)/%.air,$(METAL_FILES))
@@ -92,13 +92,13 @@ vpath %.c $(SRCS)
 vpath %.mm $(SRCS)
 vpath %.m $(SRCS)
 
-FRAMEWORKS	=	Metal MetalKit QuartzCore AppKit Foundation GameController Cocoa CoreHaptics CoreMotion PHASE AVFAudio MetalFX CoreText CoreGraphics CoreVideo ModelIO
+FRAMEWORKS	=	Metal MetalKit QuartzCore AppKit Foundation GameController Cocoa CoreHaptics CoreMotion PHASE AVFAudio MetalFX CoreText CoreGraphics CoreVideo ModelIO CloudKit
 LDFLAGS		=	$(addprefix -framework , $(FRAMEWORKS))
 MACOS_SDK	=	$(shell xcrun --sdk macosx --show-sdk-path)
 CXXFLAGS	+=	-isysroot $(MACOS_SDK)
 CFLAGS		+=	-isysroot $(MACOS_SDK)
 
-$(OBJS_DIR)/%.air: $(SHADERS)/%.metal
+$(OBJS_DIR)/%.air: %.metal
 	@echo "\t$(_YELLOW) compiling metal... $*.metal$(RESET)"
 	@mkdir -p $(dir $@)
 	xcrun -sdk macosx metal $(METAL_FLAGS) -c $< -o $@

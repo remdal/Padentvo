@@ -66,12 +66,12 @@ static const uint16_t cubeIndices[] = {
 };
 
 static const uint16_t indices[] = {
-    0, 1, 2, 2, 3, 0, /* front */
-    4, 5, 6, 6, 7, 4, /* right */
-    8, 9, 10, 10, 11, 8, /* back */
-    12, 13, 14, 14, 15, 12, /* left */
-    16, 17, 18, 18, 19, 16, /* top */
-    20, 21, 22, 22, 23, 20, /* bottom */
+    0, 1, 2, 2, 3, 0,
+    4, 5, 6, 6, 7, 4,
+    8, 9, 10, 10, 11, 8,
+    12, 13, 14, 14, 15, 12,
+    16, 17, 18, 18, 19, 16,
+    20, 21, 22, 22, 23, 20,
 };
 
 GameCoordinator::GameCoordinator(MTL::Device* pDevice,
@@ -98,6 +98,11 @@ GameCoordinator::GameCoordinator(MTL::Device* pDevice,
     _pCommandQueue = _pDevice->newCommandQueue();
     setupCamera();
     std::cout << sizeof(uint64_t) << std::endl; // 8
+    
+    for (size_t i = 0; i < kMaxFramesInFlight; ++i)
+    {
+        _bufferAllocator[i] = std::make_unique<BumpAllocator>(pDevice, kPerFrameBumpAllocatorCapacity, MTL::ResourceStorageModeShared);
+    }
     
 //    buildRenderPipelines(assetSearchPath);
 //    buildComputePipelines(assetSearchPath);
@@ -192,7 +197,7 @@ void GameCoordinator::draw( CA::MetalDrawable* pDrawable, double targetTimestamp
         pColorAttachment0->setStoreAction(MTL::StoreActionStore);
         pColorAttachment0->setClearColor(MTL::ClearColor(0.15, 0.15, 0.15, 1.0));
         MTL::RenderCommandEncoder* pRenderEnc = pCmd->renderCommandEncoder(pRenderPass);
-        //const GameState* pGameState = _game.update(targetTimestamp, _frame);
+        const GameState* pGameState = _game.update(targetTimestamp, _frame);
         //_game.draw(pRenderEnc, _frame);
         pRenderEnc->endEncoding();
     }
