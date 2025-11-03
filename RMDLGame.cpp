@@ -58,13 +58,14 @@ void RMDLGame::initializeGameState(const GameConfig& config)
     const float canvasW = 10;
     const float canvasH = canvasW * sh / (float)sw;
     const float spriteSize = kSpriteSize;
+
     for (uint8_t i = 0; i < kMaxFramesInFlight; ++i)
     {
         assert(_renderData.frameDataBuf[i]);
         auto pFrameData = (FrameData *)_renderData.frameDataBuf[i]->contents();
-        pFrameData->projectionMatrix = math::makeOrtho(-canvasW/2, canvasW/2, canvasH/2, -canvasH/2, -1, 1);
+        pFrameData->projectionMatrix = math::makeOrtho(-canvasW / 2, canvasW / 2, canvasH / 2, -canvasH / 2, -1, 1);
     }
-    _gameState.playerPosition = simd_make_float4(0, -canvasH/2 + spriteSize * 2, 0, 1);
+    _gameState.playerPosition = simd_make_float4(0, -canvasH / 2 + spriteSize * 2, 0, 1);
 }
 
 void RMDLGame::createBuffers( const GameConfig& config, MTL::Device* pDevice )
@@ -190,13 +191,10 @@ void RMDLGame::initialize( const GameConfig& config, MTL::Device* pDevice, MTL::
 
 void GameState::reset()
 {
-    enemiesAlive                = 0;
     playerBulletsAlive          = 0;
     playerFireCooldownRemaining = 0;
-    explosionsAlive             = 0;
     playerPosition              = simd_make_float4(0, 0, 0, 1);
-    currentEnemyDirection       = EnemyDirection::Right;
-    nextEnemyDirection          = EnemyDirection::Right;
+    //nextEnemyDirection          = EnemyDirection::Right;
     backgroundPosition          = simd_make_float4(0, 0, 0, 1);
     gameStatus                  = GameStatus::Ongoing;
     rumbleCountdownRemaining    = 0;
@@ -214,8 +212,6 @@ void RMDLGame::restartGame(const GameConfig &config, float startingScore)
     const uint32_t rows = _gameConfig.enemyRows;
     
     _gameState.reset();
-    _gameState.enemiesAlive = rows * cols;
-    _gameState.enemyPositions.resize(_gameState.enemiesAlive);
     _gameState.gameStatus = GameStatus::Ongoing;
     _gameState.playerScore = startingScore;
     

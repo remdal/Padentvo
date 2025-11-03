@@ -8,8 +8,10 @@
 /*                                                           */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef CONFIG_H
-# define CONFIG_H
+#ifndef RMDLCONFIG_SHARED_H
+# define RMDLCONFIG_SHARED_H
+
+# import <simd/simd.h>
 
 constexpr size_t kMaxFramesInFlight = 3;
 
@@ -18,6 +20,8 @@ struct FrameData
     simd::float4x4 projectionMatrix;
 };
 
+
+
 bool deviceSupportsResidencySets( MTL::Device* pDevice );
 
-#endif // CONFIG_H
+#endif // RMDLCONFIG_SHARED_H

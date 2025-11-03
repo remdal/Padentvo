@@ -37,10 +37,14 @@ constexpr float kRumbleIntensity             = 1.0f;
 
 struct GameConfig
 {
-    uint8_t                                 enemyRows;
-    uint8_t                                 enemyCols;
     uint32_t                                screenWidth;
     uint32_t                                screenHeight;
+    
+    PhaseAudio*                             pAudioEngine;
+
+
+    uint8_t                                 enemyRows;
+    uint8_t                                 enemyCols;
     NS::SharedPtr<MTL::Texture>             enemyTexture;
     NS::SharedPtr<MTL::Texture>             playerTexture;
     NS::SharedPtr<MTL::Texture>             playerBulletTexture;
@@ -55,7 +59,6 @@ struct GameConfig
     uint8_t                                 maxPlayerBullets;
     uint8_t                                 maxExplosions;
     float                                   explosionDurationSecs;
-    PhaseAudio*                             pAudioEngine;
 };
 
 /**

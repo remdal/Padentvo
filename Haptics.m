@@ -88,7 +88,6 @@
     {
         [self _startEngine];
     }
-    
     if (!_isEngineStopped)
     {
         CHHapticDynamicParameter* hapticParameter = [[CHHapticDynamicParameter alloc] initWithParameterID:CHHapticDynamicParameterIDHapticIntensityControl value:intensity relativeTime:0];
