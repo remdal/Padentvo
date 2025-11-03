@@ -326,7 +326,7 @@ void GameCoordinator::buildShaders()
     MTL::RenderPipelineDescriptor* pDesc = MTL::RenderPipelineDescriptor::alloc()->init();
     pDesc->setVertexFunction( pVertexFn );
     pDesc->setFragmentFunction( pFragFn );
-    pDesc->colorAttachments()->object(0)->setPixelFormat( MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB );
+    pDesc->colorAttachments()->object(0)->setPixelFormat( MTL::PixelFormat::PixelFormatRGBA16Float );
     pDesc->setDepthAttachmentPixelFormat( MTL::PixelFormat::PixelFormatDepth16Unorm );
 
     _pPSO = _pDevice->newRenderPipelineState( pDesc, &pError );
@@ -552,6 +552,7 @@ void GameCoordinator::draw( CA::MetalDrawable* pDrawable, double targetTimestamp
         uint64_t const timeStampToWait = _pacingTimeStampIndex - kMaxFramesInFlight;
         _pPacingEvent->waitUntilSignaledValue(timeStampToWait, DISPATCH_TIME_FOREVER);
     }
+    _bufferAllocator[_frame]->reset();
 //    MTK::View* pView = _pView;
     MTL::Buffer* pInstanceDataBuffer = _pInstanceDataBuffer[ _frame ];
     MTL::CommandBuffer* pCmd = _pCommandQueue->commandBuffer();
@@ -628,7 +629,7 @@ void GameCoordinator::draw( CA::MetalDrawable* pDrawable, double targetTimestamp
     colorAttachment->setTexture(pDrawable->texture());
     colorAttachment->setLoadAction(MTL::LoadActionClear);
     colorAttachment->setStoreAction(MTL::StoreActionStore);
-    colorAttachment->setClearColor(MTL::ClearColor(1.0, 1.0, 1.0, 1.0));
+    colorAttachment->setClearColor(MTL::ClearColor(1.0, 1.0, 1.0, 0.0));
     
     MTL::RenderCommandEncoder* pEnc = pCmd->renderCommandEncoder( pRpd );
     pEnc->setRenderPipelineState( _pPSO );
@@ -653,21 +654,5 @@ void GameCoordinator::draw( CA::MetalDrawable* pDrawable, double targetTimestamp
     pCmd->presentDrawable(pDrawable);
     //pCmd->encodeSignalEvent(_pPacingEvent.get(), _pacingTimeStampIndex);
     pCmd->commit();
-    
-    
-    
-//    _bufferAllocator[_frame]->reset();
-//    {
-//        MTL::RenderPassDescriptor* pRenderPass = MTL::RenderPassDescriptor::renderPassDescriptor();
-//        auto pColorAttachment0 = pRenderPass->colorAttachments()->object(0);
-//        pColorAttachment0->setTexture(_pBackbuffer.get());
-//        pColorAttachment0->setLoadAction(MTL::LoadActionClear);
-//        pColorAttachment0->setStoreAction(MTL::StoreActionStore);
-//        pColorAttachment0->setClearColor(MTL::ClearColor(0.15, 0.15, 0.15, 1.0));
-//        MTL::RenderCommandEncoder* pRenderEnc = pCmd->renderCommandEncoder(pRenderPass);
-//        const GameState* pGameState = _game.update(targetTimestamp, _frame);
-//        //_game.draw(pRenderEnc, _frame);
-//        pRenderEnc->endEncoding();
-//    }
     pPool->release();
 }
