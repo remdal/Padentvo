@@ -100,6 +100,11 @@ namespace math
                         (float4) { 0, 0, 0, 1.0 });
     }
 
+    simd::float3x3 discardTranslationP( const simd::float4x4& m )
+    {
+        return simd_matrix( m.columns[0].xyz, m.columns[1].xyz, m.columns[2].xyz );
+    }
+
     simd::float4x3 discardTranslation(const simd::float4x4& m)
     {
         return simd_matrix(m.columns[0].xyz, m.columns[1].xyz, m.columns[2].xyz, m.columns[3].xyz);

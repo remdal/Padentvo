@@ -27,6 +27,7 @@ namespace math
     simd::float4x4 makeTranslate( const simd::float3& v );
     simd::float4x4 makeScale( const simd::float3& v );
     simd::float4x3 discardTranslation( const simd::float4x4& m );
+    simd::float3x3 discardTranslationP( const simd::float4x4& m );
 }
 
 // Because these are common methods, allow other libraries to overload their implementation.

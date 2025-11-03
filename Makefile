@@ -23,7 +23,7 @@ OBJS_DIR	=	Product
 DEPS_DIR	=	$(OBJS_DIR)
 PLIST		=	macOSInfo.plist
 ICON		=	AppIcon.icns
-FLAGS		=	-std=c++20 -ObjC++ -g -I./includes -I./Shaders -I./Frameworks/metal-cpp -I./Frameworks/metal-cpp-extensions -ferror-limit=100 -fobjc-weak -Warc-bridge-casts-disallowed-in-nonarc -Wobjc-missing-super-calls#-Wall -Wextra -Werror -fobjc-arc
+FLAGS		=	-std=c++20 -ObjC++ -g -I./includes -I./Shaders -I./Frameworks/metal-cpp -I./Frameworks/metal-cpp-extensions -ferror-limit=100 -fobjc-weak -Warc-bridge-casts-disallowed-in-nonarc -Wobjc-missing-super-calls -Wincomplete-implementation #-Wall -Wextra -Werror -fobjc-arc
 #LINKERFLAGS	=	-Xlinker -sectcreate -Xlinker __TEXT -Xlinker __info_plist -Xlinker $(PLIST)
 
 CPP_OBJS	=	$(patsubst $(SRCS)/%.cpp,$(OBJS_DIR)/%.o,$(CPP_FILES))

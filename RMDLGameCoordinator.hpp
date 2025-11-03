@@ -51,7 +51,6 @@ public:
                               NS::UInteger outputWidth, NS::UInteger outputHeight);
 
     void presentTexture( MTL::RenderCommandEncoder* pRenderEnc, MTL::Texture* pTexture );
-    void draw( CA::MetalDrawable* pDrawable, double targetTimestamp );
 
     void resizeDrawable(float width, float height);
     void setMaxEDRValue(float value)     { _maxEDRValue = value; }
@@ -74,6 +73,17 @@ public:
     float _rotationAngle;
     void buildCubeBuffers();
     
+    /* P */
+    void buildShaders();
+    void buildComputePipeline();
+    void buildDepthStencilStates();
+    void buildTextures();
+    void buildBuffers();
+    void generateMandelbrotTexture( MTL::CommandBuffer* pCommandBuffer );
+    void draw( CA::MetalDrawable* pDrawable, double targetTimestamp );
+    
+    
+    
 private:
     RMDLCamera                          _camera;
     RMDLGame                            _game;
@@ -84,8 +94,6 @@ private:
 
     MTL::PixelFormat                    _layerPixelFormat;
     MTL::Buffer*                        _pUniformBuffer;
-    MTL::Device*                        _pDevice;
-    MTL::CommandQueue*                  _pCommandQueue;
     
     NS::SharedPtr<MTL::Texture>         _pBackbuffer;
     NS::SharedPtr<MTL::Texture>         _pUpscaledbuffer;
@@ -118,6 +126,26 @@ private:
     int _frame;
 
     std::unique_ptr<PhaseAudio> _pAudioEngine;
+    
+    /* P */
+    MTL::Device*                        _pDevice;
+    MTL::CommandQueue*                  _pCommandQueue;
+    MTL::Library*                       _pShaderLibrary;
+    MTL::RenderPipelineState*           _pPSO;
+    MTL::ComputePipelineState*          _pComputePSO;
+    MTL::DepthStencilState*             _pDepthStencilState;
+    MTL::Texture*                       _pTexture;
+    MTL::Buffer*                        _pVertexDataBuffer;
+    MTL::Buffer*                _pInstanceDataBuffer[kMaxFramesInFlight];
+    MTL::Buffer*                _pCameraDataBuffer[kMaxFramesInFlight];
+    MTL::Buffer*                _pIndexBuffer;
+    MTL::Buffer*                _pTextureAnimationBuffer;
+    float                       _angle;
+    int                         _frameP;
+    dispatch_semaphore_t        _semaphore;
+    static const int            kMaxFramesInFlight;
+    uint                        _animationIndex;
+    NS::SharedPtr<MTL::Texture>         _pUpscaledbufferAdapterP;
 };
 
 #endif /* RMDLGAMECOORDINATOR_HPP */

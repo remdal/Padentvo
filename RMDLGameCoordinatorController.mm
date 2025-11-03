@@ -38,6 +38,7 @@ static void* renderWorker( void* _Nullable obj )
     {
         _metalLayer = metalLayer;
         NSString* shaderPath = NSBundle.mainBundle.resourcePath;
+//        NSString *shaderPath = @"background_general.png";
         _pGameCoordinator = std::make_unique< GameCoordinator >((__bridge MTL::Device *)_metalLayer.device, (MTL::PixelFormat)_metalLayer.pixelFormat, _metalLayer.drawableSize.width, _metalLayer.drawableSize.height, gameUICanvasSize, shaderPath.UTF8String);
         _metalDisplayLink = [[CAMetalDisplayLink alloc] initWithMetalLayer:_metalLayer];
         _metalDisplayLink.delegate = self;
