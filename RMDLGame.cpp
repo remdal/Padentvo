@@ -71,7 +71,7 @@ void RMDLGame::initializeGameState(const GameConfig& config)
 void RMDLGame::createBuffers( const GameConfig& config, MTL::Device* pDevice )
 {
     _renderData.spriteMesh = mesh_utils::newScreenQuad(pDevice, kSpriteSize, kSpriteSize);
-    _renderData.backgroundMesh = mesh_utils::newScreenQuad(pDevice, 10 * 1920 / 1080.0, 10);
+    _renderData.backgroundMesh = mesh_utils::newScreenQuad(pDevice, 10 * 3024 / 1964.0, 10);
     const size_t playerPositionBufSize       = sizeof(simd::float4);
     const size_t frameDataBufSize            = sizeof(FrameData);
     const size_t playerBulletPositionBufSize = sizeof(simd::float4) * config.maxPlayerBullets;

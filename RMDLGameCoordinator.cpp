@@ -189,7 +189,7 @@ GameCoordinator::~GameCoordinator()
 
 void GameCoordinator::setupCamera()
 {
-    _camera.initPerspectiveWithPosition(
+    _camera.initParallelWithPosition(
         {0.0f, 0.0f, 5.0f},
         {0.0f, 0.0f, -1.0f},
         {0.0f, 1.0f, 0.0f},
@@ -405,7 +405,6 @@ void GameCoordinator::buildComputePipeline()
         __builtin_printf( "%s", pError->localizedDescription()->utf8String() );
         assert(false);
     }
-
     pMandelbrotFn->release();
     pComputeLibrary->release();
 }
@@ -415,9 +414,7 @@ void GameCoordinator::buildDepthStencilStates()
     MTL::DepthStencilDescriptor* pDsDesc = MTL::DepthStencilDescriptor::alloc()->init();
     pDsDesc->setDepthCompareFunction( MTL::CompareFunction::CompareFunctionLess );
     pDsDesc->setDepthWriteEnabled( true );
-
     _pDepthStencilState = _pDevice->newDepthStencilState( pDsDesc );
-
     pDsDesc->release();
 }
 
@@ -430,10 +427,8 @@ void GameCoordinator::buildTextures()
     pTextureDesc->setTextureType( MTL::TextureType2D );
     pTextureDesc->setStorageMode( MTL::StorageModeManaged );
     pTextureDesc->setUsage( MTL::ResourceUsageSample | MTL::ResourceUsageRead | MTL::ResourceUsageWrite);
-
     MTL::Texture *pTexture = _pDevice->newTexture( pTextureDesc );
     _pTexture = pTexture;
-
     pTextureDesc->release();
 }
 
@@ -567,7 +562,7 @@ void GameCoordinator::draw( CA::MetalDrawable* pDrawable, double targetTimestamp
     const float scl = 0.2f;
     shader_types::InstanceData* pInstanceData = reinterpret_cast< shader_types::InstanceData *>( pInstanceDataBuffer->contents() );
 
-    simd::float3 objectPosition = { 0.f, 0.f, -20.f };
+    simd::float3 objectPosition = { 0.f, 0.f, -6.f };
     
     simd::float4x4 rt = math::makeTranslate( objectPosition );
     simd::float4x4 rr1 = math::makeYRotate( -_angle );
@@ -623,7 +618,7 @@ void GameCoordinator::draw( CA::MetalDrawable* pDrawable, double targetTimestamp
 
     // Begin render pass:
 
-//    MTL::RenderPassDescriptor* pRpd = pView->currentRenderPassDescriptor();
+//    MTL::RenderPassDescriptor* pRpd = pView->currentRenderPassDescriptor(); // mtk
     MTL::RenderPassDescriptor* pRpd = MTL::RenderPassDescriptor::renderPassDescriptor();
     auto colorAttachment = pRpd->colorAttachments()->object(0);
     colorAttachment->setTexture(pDrawable->texture());

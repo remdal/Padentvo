@@ -85,7 +85,7 @@
 {
     NSWindowStyleMask mask = NSWindowStyleMaskClosable | NSWindowStyleMaskTitled | NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable;
     NSScreen * screen = [NSScreen mainScreen];
-    NSRect contentRect = NSMakeRect(0, 0, 1280, 720);
+    NSRect contentRect = NSMakeRect(0, 0, 1920, 1080);
     contentRect.origin.x = (screen.frame.size.width / 2) - (contentRect.size.width / 2);
     contentRect.origin.y = (screen.frame.size.height / 2) - (contentRect.size.height / 2);
     _window = [[GameWindow alloc] initWithContentRect:contentRect styleMask:mask backing:NSBackingStoreBuffered defer:NO screen:screen];
@@ -102,13 +102,12 @@
     [_window makeKeyAndOrderFront:_window];
     [_window toggleFullScreen:nil];
 }
-
 - (void)createView
 {
     NSAssert(_window, @"You need to create the window before the view");
     _metalLayer = [[CAMetalLayer alloc] init];
     _metalLayer.device = MTLCreateSystemDefaultDevice();
-    _metalLayer.drawableSize = NSMakeSize(1920 , 1080);
+    _metalLayer.drawableSize = NSMakeSize(3024, 1964);
     _metalLayer.opaque = YES;
     _metalLayer.framebufferOnly = YES;
     _metalLayer.contentsGravity = kCAGravityResizeAspect;
