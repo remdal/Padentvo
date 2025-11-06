@@ -1,4 +1,5 @@
 # Padentvo
+
 Trying to make a game with Metal C++
 
-CA layer
+Utilisant Core Animation afin de contrôler un maximum de choses...

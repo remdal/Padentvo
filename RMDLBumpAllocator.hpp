@@ -35,11 +35,11 @@ public:
     template <typename T>
     std::pair<T*, uint64_t> allocate(uint64_t count = 1) noexcept
     {
-        uint64_t allocSize = mem::alignUp(sizeof(T) * count, 8);
+        uint64_t allocSize  = mem::alignUp(sizeof(T) * count, 8);
         assert((_offset + allocSize) <= _capacity);
         T* dataPtr          = reinterpret_cast<T*>(_contents + _offset);
         uint64_t dataOffset = _offset;
-        _offset += allocSize;
+        _offset             += allocSize;
         return { dataPtr, dataOffset };
     }
     MTL::Buffer* baseBuffer() const noexcept

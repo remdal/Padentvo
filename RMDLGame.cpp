@@ -62,7 +62,7 @@ void RMDLGame::initializeGameState(const GameConfig& config)
     for (uint8_t i = 0; i < kMaxFramesInFlight; ++i)
     {
         assert(_renderData.frameDataBuf[i]);
-        auto pFrameData = (FrameData *)_renderData.frameDataBuf[i]->contents();
+        auto pFrameData = (RMDLCameraUniforms *)_renderData.frameDataBuf[i]->contents();
         pFrameData->projectionMatrix = math::makeOrtho(-canvasW / 2, canvasW / 2, canvasH / 2, -canvasH / 2, -1, 1);
     }
     _gameState.playerPosition = simd_make_float4(0, -canvasH / 2 + spriteSize * 2, 0, 1);
@@ -73,7 +73,7 @@ void RMDLGame::createBuffers( const GameConfig& config, MTL::Device* pDevice )
     _renderData.spriteMesh = mesh_utils::newScreenQuad(pDevice, kSpriteSize, kSpriteSize);
     _renderData.backgroundMesh = mesh_utils::newScreenQuad(pDevice, 10 * 3024 / 1964.0, 10);
     const size_t playerPositionBufSize       = sizeof(simd::float4);
-    const size_t frameDataBufSize            = sizeof(FrameData);
+    const size_t frameDataBufSize            = sizeof(RMDLCameraUniforms);
     const size_t playerBulletPositionBufSize = sizeof(simd::float4) * config.maxPlayerBullets;
     const size_t backgroundPositionBufSize   = sizeof(simd::float4);
     

@@ -20,4 +20,7 @@ namespace BufferFormats
     static const MTLPixelFormat shadowDepthFormat   = MTLPixelFormatDepth32Float;
     static const NSUInteger     count               = 1;
     static const MTLPixelFormat backBufferformat    = MTLPixelFormatBGRA8Unorm_sRGB;
+    static const MTLPixelFormat beautifulPixelForma = MTL::PixelFormatRGBA16Float;
+    // ...
+    // static const MTLPixelFormat gBufferDepthFormat = MTLPixelFormatR32Float; // IOS
 }

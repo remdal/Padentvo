@@ -23,6 +23,7 @@
 #include "RMDLBumpAllocator.hpp"
 
 #include "RMDLConfig_Shared.h"
+#include "RMDLMainRenderer_shared.h"
 
 constexpr uint64_t kEnemyTextureIndex        = 0;
 constexpr uint64_t kPlayerTextureIndex       = 1;

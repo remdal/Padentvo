@@ -85,7 +85,7 @@
 {
     NSWindowStyleMask mask = NSWindowStyleMaskClosable | NSWindowStyleMaskTitled | NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable;
     NSScreen * screen = [NSScreen mainScreen];
-    NSRect contentRect = NSMakeRect(0, 0, 1920, 1080);
+    NSRect contentRect = NSMakeRect(0, 0, 1280, 720);
     contentRect.origin.x = (screen.frame.size.width / 2) - (contentRect.size.width / 2);
     contentRect.origin.y = (screen.frame.size.height / 2) - (contentRect.size.height / 2);
     _window = [[GameWindow alloc] initWithContentRect:contentRect styleMask:mask backing:NSBackingStoreBuffered defer:NO screen:screen];

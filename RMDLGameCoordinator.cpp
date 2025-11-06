@@ -129,12 +129,11 @@ GameCoordinator::GameCoordinator(MTL::Device* pDevice,
     printf("GameCoordinator constructor called\n");
     unsigned int numThreads = std::thread::hardware_concurrency();
     std::cout << "number of Threads = std::thread::hardware_concurrency : " << numThreads << std::endl;
-    ft_memset(&_screenMesh, 0x0, sizeof(IndexedMesh)); // fill with 0
+    ft_memset(&_screenMesh, 0x0, sizeof(IndexedMesh));
     ft_memset(&_quadMesh, 0x0, sizeof(IndexedMesh));
     _pCommandQueue = _pDevice->newCommandQueue();
     setupCamera();
-    std::cout << sizeof(uint64_t) << std::endl; // 8
-    
+    std::cout << sizeof(uint64_t) << std::endl;
     for (size_t i = 0; i < kMaxFramesInFlight; ++i)
     {
         _bufferAllocator[i] = std::make_unique<BumpAllocator>(pDevice, kPerFrameBumpAllocatorCapacity, MTL::ResourceStorageModeShared);
@@ -143,7 +142,6 @@ GameCoordinator::GameCoordinator(MTL::Device* pDevice,
 //    buildRenderPipelines(assetSearchPath);
 //    buildComputePipelines(assetSearchPath);
 //    buildSamplers();
-    
     const NS::UInteger nativeWidth = (NS::UInteger)(width / 1.2);
     const NS::UInteger nativeHeight = (NS::UInteger)(height / 1.2);
 
@@ -153,6 +151,8 @@ GameCoordinator::GameCoordinator(MTL::Device* pDevice,
     buildDepthStencilStates();
     buildTextures();
     buildBuffers();
+    buildShadersMap();
+    buildBuffersMap();
     _semaphore = dispatch_semaphore_create( GameCoordinator::kMaxFramesInFlight );
     printf("GameCoordinator constructor completed\n");
 }
@@ -181,8 +181,16 @@ GameCoordinator::~GameCoordinator()
         _pCameraDataBuffer[i]->release();
     }
     _pIndexBuffer->release();
+    _pShaderLibrary->release();
+    _pVertexDataBufferMap->release();
+    for ( int i = 0; i < kMaxFramesInFlight; ++i )
+    {
+        _pInstanceDataBufferMap[i]->release();
+    }
+    _pIndexBufferMap->release();
     _pComputePSO->release();
     _pPSO->release();
+    _pMapPSO->release();
     _pCommandQueue->release();
     _pDevice->release();
 }
@@ -340,6 +348,116 @@ void GameCoordinator::buildShaders()
     pFragFn->release();
     pDesc->release();
     _pShaderLibrary = pLibrary;
+}
+
+void GameCoordinator::buildShadersMap()
+{
+    const char* shaderSrc = R"(
+        #include <metal_stdlib>
+        using namespace metal;
+
+        struct v2f
+        {
+            float4 position [[position]];
+            half3 color;
+        };
+
+        struct VertexData
+        {
+            float3 position;
+        };
+
+        struct InstanceData
+        {
+            float4x4 instanceTransform;
+            float4 instanceColor;
+        };
+
+        v2f vertex vertexMainMap( device const VertexData* vertexData [[buffer(0)]],
+                               device const InstanceData* instanceData [[buffer(1)]],
+                               uint vertexId [[vertex_id]],
+                               uint instanceId [[instance_id]] )
+        {
+            v2f o;
+            float4 pos = float4( vertexData[ vertexId ].position, 1.0 );
+            o.position = instanceData[ instanceId ].instanceTransform * pos;
+            o.color = half3( instanceData[ instanceId ].instanceColor.rgb );
+            return o;
+        }
+
+        half4 fragment fragmentMainMap( v2f in [[stage_in]] )
+        {
+            return half4( in.color, 1.0 );
+        }
+    )";
+
+    NS::Error* pError = nullptr;
+    MTL::Library* pLibrary = _pDevice->newLibrary( NS::String::string(shaderSrc, NS::StringEncoding::UTF8StringEncoding), nullptr, &pError );
+    if ( !pLibrary )
+    {
+        __builtin_printf( "%s", pError->localizedDescription()->utf8String() );
+        assert( false );
+    }
+
+    MTL::Function* pVertexFn = pLibrary->newFunction( NS::String::string("vertexMainMap", NS::StringEncoding::UTF8StringEncoding) );
+    MTL::Function* pFragFn = pLibrary->newFunction( NS::String::string("fragmentMainMap", NS::StringEncoding::UTF8StringEncoding) );
+
+    MTL::RenderPipelineDescriptor* pDesc = MTL::RenderPipelineDescriptor::alloc()->init();
+    pDesc->setVertexFunction( pVertexFn );
+    pDesc->setFragmentFunction( pFragFn );
+    pDesc->colorAttachments()->object(0)->setPixelFormat( MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB );
+
+    _pMapPSO = _pDevice->newRenderPipelineState( pDesc, &pError );
+    if ( !_pMapPSO )
+    {
+        __builtin_printf( "%s", pError->localizedDescription()->utf8String() );
+        assert( false );
+    }
+
+    pVertexFn->release();
+    pFragFn->release();
+    pDesc->release();
+    _pShaderLibrary = pLibrary;
+}
+
+void GameCoordinator::buildBuffersMap()
+{
+    using simd::float3;
+
+    const float s = 0.5f;
+
+    float3 verts[] = {
+        { -s, -s, +s },
+        { +s, -s, +s },
+        { +s, +s, +s },
+        { -s, +s, +s }
+    };
+
+    uint16_t indices[] = {
+        0, 1, 2,
+        2, 3, 0,
+    };
+
+    const size_t vertexDataSize = sizeof( verts );
+    const size_t indexDataSize = sizeof( indices );
+
+    MTL::Buffer* pVertexBuffer = _pDevice->newBuffer( vertexDataSize, MTL::ResourceStorageModeManaged );
+    MTL::Buffer* pIndexBuffer = _pDevice->newBuffer( indexDataSize, MTL::ResourceStorageModeManaged );
+
+    _pVertexDataBuffer = pVertexBuffer;
+    _pIndexBuffer = pIndexBuffer;
+
+    memcpy( _pVertexDataBuffer->contents(), verts, vertexDataSize );
+    memcpy( _pIndexBuffer->contents(), indices, indexDataSize );
+
+    _pVertexDataBuffer->didModifyRange( NS::Range::Make( 0, _pVertexDataBuffer->length() ) );
+    _pIndexBuffer->didModifyRange( NS::Range::Make( 0, _pIndexBuffer->length() ) );
+
+    const size_t instanceDataSize = kMaxFramesInFlight * kNumInstances * sizeof( shader_types::InstanceData );
+    for ( size_t i = 0; i < kMaxFramesInFlight; ++i )
+    {
+        _pInstanceDataBuffer[ i ] = _pDevice->newBuffer( instanceDataSize, MTL::ResourceStorageModeManaged );
+    }
 }
 
 void GameCoordinator::buildComputePipeline()
@@ -538,17 +656,9 @@ void GameCoordinator::generateMandelbrotTexture( MTL::CommandBuffer* pCommandBuf
 
 void GameCoordinator::draw( CA::MetalDrawable* pDrawable, double targetTimestamp )
 {
-    assert(pDrawable);
     NS::AutoreleasePool *pPool = NS::AutoreleasePool::alloc()->init();
-    ++_pacingTimeStampIndex;
     _frame = (_frame + 1) % kMaxFramesInFlight;
-    if (_pacingTimeStampIndex > kMaxFramesInFlight)
-    {
-        uint64_t const timeStampToWait = _pacingTimeStampIndex - kMaxFramesInFlight;
-        _pPacingEvent->waitUntilSignaledValue(timeStampToWait, DISPATCH_TIME_FOREVER);
-    }
-    _bufferAllocator[_frame]->reset();
-//    MTK::View* pView = _pView;
+    //_bufferAllocator[_frame]->reset();
     MTL::Buffer* pInstanceDataBuffer = _pInstanceDataBuffer[ _frame ];
     MTL::CommandBuffer* pCmd = _pCommandQueue->commandBuffer();
     dispatch_semaphore_wait( _semaphore, DISPATCH_TIME_FOREVER );
@@ -556,13 +666,11 @@ void GameCoordinator::draw( CA::MetalDrawable* pDrawable, double targetTimestamp
     pCmd->addCompletedHandler( ^void( MTL::CommandBuffer* pCmd ){
         dispatch_semaphore_signal( pGameCoordinator->_semaphore );
     });
-
     _angle += 0.002f;
-
-    const float scl = 0.2f;
+    const float scl = 0.1f;
     shader_types::InstanceData* pInstanceData = reinterpret_cast< shader_types::InstanceData *>( pInstanceDataBuffer->contents() );
 
-    simd::float3 objectPosition = { 0.f, 0.f, -6.f };
+    simd::float3 objectPosition = { 0.f, 0.f, -8.f };
     
     simd::float4x4 rt = math::makeTranslate( objectPosition );
     simd::float4x4 rr1 = math::makeYRotate( -_angle );
@@ -609,16 +717,12 @@ void GameCoordinator::draw( CA::MetalDrawable* pDrawable, double targetTimestamp
     pInstanceDataBuffer->didModifyRange( NS::Range::Make( 0, pInstanceDataBuffer->length() ) );
     MTL::Buffer* pCameraDataBuffer = _pCameraDataBuffer[ _frame ];
     shader_types::CameraData* pCameraData = reinterpret_cast< shader_types::CameraData *>( pCameraDataBuffer->contents() );
-    pCameraData->perspectiveTransform = math::makePerspective( 45.f * M_PI / 180.f, 1.f, 0.03f, 500.0f ) ;
+    pCameraData->perspectiveTransform = math::makePerspective( 45.f * M_PI / 180.f, 1.f, 0.f, 500.0f ) ;
     pCameraData->worldTransform = math::makeIdentity();
     pCameraData->worldNormalTransform = math::discardTranslationP( pCameraData->worldTransform );
     pCameraDataBuffer->didModifyRange( NS::Range::Make( 0, sizeof( shader_types::CameraData ) ) );
-
     generateMandelbrotTexture( pCmd );
-
-    // Begin render pass:
-
-//    MTL::RenderPassDescriptor* pRpd = pView->currentRenderPassDescriptor(); // mtk
+//    MTL::RenderPassDescriptor* pRpd = pView->currentRenderPassDescriptor();// mtk
     MTL::RenderPassDescriptor* pRpd = MTL::RenderPassDescriptor::renderPassDescriptor();
     auto colorAttachment = pRpd->colorAttachments()->object(0);
     colorAttachment->setTexture(pDrawable->texture());
@@ -628,6 +732,7 @@ void GameCoordinator::draw( CA::MetalDrawable* pDrawable, double targetTimestamp
     
     MTL::RenderCommandEncoder* pEnc = pCmd->renderCommandEncoder( pRpd );
     pEnc->setRenderPipelineState( _pPSO );
+    pEnc->setRenderPipelineState( _pMapPSO );
     pEnc->setDepthStencilState( _pDepthStencilState );
 
     pEnc->setVertexBuffer( _pVertexDataBuffer, /* offset */ 0, /* index */ 0 );

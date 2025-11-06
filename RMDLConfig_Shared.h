@@ -15,12 +15,10 @@
 
 constexpr size_t kMaxFramesInFlight = 3;
 
-struct FrameData
-{
-    simd::float4x4 projectionMatrix;
-};
-
-
+//struct FrameData
+//{
+//    simd::float4x4 projectionMatrix;
+//};
 
 bool deviceSupportsResidencySets( MTL::Device* pDevice );
 

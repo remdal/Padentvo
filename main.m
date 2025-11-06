@@ -19,7 +19,7 @@ static void makeSliderSubmenu(NSMenu* parentMenu, NSString* title, SEL action, d
     NSMenuItem* sliderHostItem = [parentMenu addItemWithTitle:title action:nil keyEquivalent:@""];
     sliderHostItem.submenu = submenu;
     NSSlider* slider = [NSSlider sliderWithTarget:nil action:action];
-    slider.frame = NSMakeRect(0, 0, 160, 16);
+    slider.frame = NSMakeRect(0, 0, 160, 20);
     NSMenuItem* sliderItem = [submenu addItemWithTitle:@"" action:nil keyEquivalent:@""];
     sliderItem.view = slider;
     slider.numberOfTickMarks = tickmarks;
@@ -37,7 +37,7 @@ int main( int argc, const char * argv[] )
     application.mainMenu = [[NSMenu alloc] init];
     NSString* bundleName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
     if (!bundleName)
-        bundleName = @"ok";
+        bundleName = @"Padentvo";
     std::cout << bundleName << std::endl;
     NSMenu* appMenu = [[NSMenu alloc] initWithTitle:@""];
     NSMenuItem* appMenuItem = [[NSMenuItem alloc] initWithTitle:@"" action:nil keyEquivalent:@""];

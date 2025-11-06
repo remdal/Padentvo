@@ -81,6 +81,8 @@ public:
     void buildBuffers();
     void generateMandelbrotTexture( MTL::CommandBuffer* pCommandBuffer );
     void draw( CA::MetalDrawable* pDrawable, double targetTimestamp );
+    void buildShadersMap();
+    void buildBuffersMap();
     
     
     
@@ -132,6 +134,7 @@ private:
     MTL::CommandQueue*                  _pCommandQueue;
     MTL::Library*                       _pShaderLibrary;
     MTL::RenderPipelineState*           _pPSO;
+    MTL::RenderPipelineState*           _pMapPSO;
     MTL::ComputePipelineState*          _pComputePSO;
     MTL::DepthStencilState*             _pDepthStencilState;
     MTL::Texture*                       _pTexture;
@@ -143,9 +146,12 @@ private:
     float                       _angle;
     int                         _frameP;
     dispatch_semaphore_t        _semaphore;
-    static const int            kMaxFramesInFlight;
     uint                        _animationIndex;
     NS::SharedPtr<MTL::Texture>         _pUpscaledbufferAdapterP;
+    MTL::Buffer* _pVertexDataBufferMap;
+    MTL::Buffer* _pInstanceDataBufferMap[kMaxFramesInFlight];
+    MTL::Buffer* _pIndexBufferMap;
+    static const int            kMaxFramesInFlight;
 };
 
 #endif /* RMDLGAMECOORDINATOR_HPP */
