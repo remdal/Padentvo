@@ -84,6 +84,7 @@ public:
     void buildShadersMap();
     void buildBuffersMap();
     
+    void setupPipelineCamera();
     
     
 private:
@@ -135,12 +136,13 @@ private:
     MTL::Library*                       _pShaderLibrary;
     MTL::RenderPipelineState*           _pPSO;
     MTL::RenderPipelineState*           _pMapPSO;
+    MTL::RenderPipelineState*           _pCameraPSO;
     MTL::ComputePipelineState*          _pComputePSO;
     MTL::DepthStencilState*             _pDepthStencilState;
     MTL::Texture*                       _pTexture;
     MTL::Buffer*                        _pVertexDataBuffer;
-    MTL::Buffer*                _pInstanceDataBuffer[kMaxFramesInFlight];
-    MTL::Buffer*                _pCameraDataBuffer[kMaxFramesInFlight];
+    //MTL::Buffer*                _pInstanceDataBuffer[kMaxFramesInFlight];
+    //MTL::Buffer*                _pCameraDataBuffer[kMaxFramesInFlight];
     MTL::Buffer*                _pIndexBuffer;
     MTL::Buffer*                _pTextureAnimationBuffer;
     float                       _angle;

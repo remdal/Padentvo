@@ -27,6 +27,21 @@ struct RMDLCameraUniforms
     simd::float4        frustumPlanes[6];
 };
 
+struct FrameData
+{
+    simd::float4x4 projection_matrix_center;
+    simd::float4x4 projection_matrix_inverse_center;
+    simd::float4x4 view_matrix_center;
+//    uint framebuffer_width;
+//    uint framebuffer_height;
+
+    simd::float4x4 sky_modelview_matrix;
+
+    simd::float4 sun_eye_direction;
+    simd::float4 sun_color;
+    float sun_specular_intensity;
+};
+
 struct RMDLUniforms
 {
     RMDLCameraUniforms  cameraUniforms;

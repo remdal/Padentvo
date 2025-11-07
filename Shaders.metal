@@ -3,31 +3,31 @@ using namespace metal;
 
 struct VertexIn
 {
-    float3 position [[attribute(0)]];
-    float3 color [[attribute(1)]];
+    float3      position [[attribute(0)]];
+    float3      color    [[attribute(1)]];
 };
 
 struct VertexOut
 {
-    float4 position [[position]];
-    float3 color;
+    float4      position [[position]];
+    float3      color;
 };
 
 struct Uniforms
 {
-    float4x4 modelViewProjectionMatrix;
-    float4x4 modelMatrix;
+    float4x4    modelViewProjectionMatrix;
+    float4x4    modelMatrix;
 };
 
-vertex VertexOut vertex_main(VertexIn in [[stage_in]], constant Uniforms &uniforms [[buffer(1)]])
+vertex VertexOut vertex_main_center(VertexIn in [[stage_in]], constant RMDLUniforms &uniforms [[buffer(1)]])
 {
-    VertexOut out;
-    out.position = uniforms.modelViewProjectionMatrix * float4(in.position, 1.0);
-    out.color = in.color;
+    VertexOut   out;
+    out.position = uniforms.cameraUniforms.modelViewProjectionMatrix * float4(in.position, 1.0);
+    out.color    = in.color;
     return out;
 }
 
-fragment float4 fragment_main(VertexOut in [[stage_in]])
+fragment float4 fragment_main_center(VertexOut in [[stage_in]])
 {
     return float4(in.color, 1.0);
 }

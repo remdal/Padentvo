@@ -107,8 +107,9 @@
     NSAssert(_window, @"You need to create the window before the view");
     _metalLayer = [[CAMetalLayer alloc] init];
     _metalLayer.device = MTLCreateSystemDefaultDevice();
-    _metalLayer.drawableSize = NSMakeSize(3024, 1964);
+    _metalLayer.drawableSize = NSMakeSize(1280, 720);
     _metalLayer.opaque = YES;
+    _metalLayer.cornerRadius = 10;
     _metalLayer.framebufferOnly = YES;
     _metalLayer.contentsGravity = kCAGravityResizeAspect;
     _metalLayer.backgroundColor = CGColorGetConstantColor(kCGColorWhite);
@@ -132,11 +133,6 @@
 {
     NSArray<NSString *>* args = [[NSProcessInfo processInfo] arguments];
     BOOL exitAfterOneFrame = [args containsObject:@"--auto-close"];
-    BOOL isArgvContainDict  = [args containsObject:@"numbers.dict"];
-    if (isArgvContainDict)
-    {
-        NSLog(@"Transformation du programme...");
-    }
     if (exitAfterOneFrame)
     {
         NSLog(@"Automatically terminating in 8 seconds...");
